@@ -1,8 +1,3 @@
----
-edit_link: ''
-title: Build for R Car Gen 3
----
-
 # Building for Supported Renesas Boards
 
 AGL supports building for several automotive
@@ -23,24 +18,11 @@ image for the following Renesas platforms:
 The information on this page describes setup and build procedures for both these
 Renesas development kits.
 
-You can find more information on building images from these resources:
-
-* [AGL-Devkit-Build-your-1st-AGL-Application.pdf](https://iot.bzh/download/public/2016/sdk/AGL-Devkit-Build-your-1st-AGL-Application.pdf)
- Generic guide on how to build various application types (HTML5, native, Qt, QML, …) for AGL.
- This is really about building an application and not the AGL image.
-* [AGL-Devkit-HowTo_bake_a_service.pdf](https://iot.bzh/download/public/2016/bsp/AGL_Phase2-Devkit-HowTo_bake_a_service.pdf)
- Generic guide on how to add a new service in the BSP.
- Goes back to 2015 and uses Yocto 2.x.
- Includes stuff on building an image but looks like the focus is really the service.
-
 ## 1. Downloading Proprietary Drivers
 
 Before setting up the build environment, you need to download proprietary drivers from the
 [R-Car H3/M3 Software library and Technical document](https://www.renesas.com/us/en/solutions/automotive/rcar-download/rcar-demoboard-2.html)
 site.
-This download site supports the Pro and Premier board starter kits.
-
-**NOTE:** Not sure what you do if you are using the Salvator-X or Kingfisher Infotainment boards.
 
 Follow these steps to download the drivers you need:
 
@@ -50,7 +32,7 @@ Follow these steps to download the drivers you need:
      display the list of ZIP files containing the drivers you need.
      Following is an example:
 
-     ```bash
+     ```sh
      grep -rn ZIP_.= $AGL_TOP/meta-agl/meta-agl-bsp/meta-rcar-gen3/scripts/setup_mm_packages.sh
      ```
 
@@ -60,29 +42,16 @@ Follow these steps to download the drivers you need:
 
    Be sure to have the correct BSP version of the R-Car Starter Kit
    based on the version of the AGL software you are using.
-   Use the following table to map the Renesas version to your AGL software:
-
-     | AGL Version| Renesas version |
-     |:-:|:-:|
-     | AGL master  | 3.21.0 |
-     | AGL icefish 9.0.0 9.0.1 9.0.2 | 3.21.0 |
-     | AGL halibut 8.0.2 8.0.3 8.0.4 8.0.5 8.0.6 | 3.21.0 |
-     | AGL halibut 8.0.1 | 3.19.0 |
-     | AGL halibut 8.0.0 | 3.15.0 |
-     | AGL guppy 7.0.4 | 3.21.0 |
-     | AGL guppy 7.0.3 | 3.19.0 |
-     | AGL guppy 7.0.0 7.0.1 7.0.2 | 3.9.0 |
-     | AGL flounder 6.0.3, 6.0.4 6.0.5 | 3.9.0 |
-     | AGL flounder 6.0.0, 6.0.1, 6.0.2 | 3.7.0 |
-     | AGL eel 5.0.x, 5.1.0| 2.23.1 |
-     | AGL dab 4.0.x |2.19.0 |
-
-   **NOTE:**
    Find the appropriate download links on the
    [R-Car H3/M3 Software library and Technical document](https://www.renesas.com/us/en/solutions/automotive/rcar-download/rcar-demoboard-2.html)
    site.
    The file pairs are grouped according to the Yocto Project version you are
    using with the AGL software.
+   Use the following table to map the Renesas version to your AGL software:
+
+| AGL Version | Renesas version |
+|:-:|:-:|
+| AGL master | 4.1.0 |
 
 3. **Download the Files:**
 
@@ -106,8 +75,8 @@ Follow these steps to download the drivers you need:
    your download directory.
    Here is an example:
 
-   ```bash
-   export XDG_DOWNLOAD_DIR=$HOME/Downloads
+   ```sh
+   $ export XDG_DOWNLOAD_DIR=$HOME/Downloads
    ```
 
 5. **Be Sure the Files Have Rights:**
@@ -115,8 +84,8 @@ Follow these steps to download the drivers you need:
    Be sure you have the necessary rights for the files you downloaded.
    You can use the following command:
 
-   ```bash
-   chmod a+r $XDG_DOWNLOAD_DIR/*.zip
+   ```sh
+   chmod a+x $XDG_DOWNLOAD_DIR/*.zip
    ```
 
 6. **Check to be Sure the Files are Downloaded and Have the Correct Rights:**
@@ -125,10 +94,10 @@ Follow these steps to download the drivers you need:
    they have the correct access rights.
    Here is an example:
 
-   ```bash
+   ```sh
    $ ls -l $XDG_DOWNLOAD_DIR/*.zip
-   -rw-r--r-- 1 iot bzh 5431245 sept. 16 21:07 R-Car_Gen3_Series_Evaluation_Software_Package_for_Linux-weston5-20190802.zip
-   -rw-r--r-- 1 iot bzh 3442158 sept. 16 21:07 R-Car_Gen3_Series_Evaluation_Software_Package_of_Linux_Drivers-weston5-20190802.zip
+   -rw-rw-r-- 1 scottrif scottrif 4662080 Nov 19 14:48 /home/scottrif/Downloads/R-Car_Gen3_Series_Evaluation_Software_Package_for_Linux-weston8-20200923.zip
+   -rw-rw-r-- 1 scottrif scottrif 3137626 Nov 19 14:49 /home/scottrif/Downloads/R-Car_Gen3_Series_Evaluation_Software_Package_of_Linux_Drivers-weston8-20200923.zip
    ```
 
 ## 2. Getting More Software
@@ -147,25 +116,24 @@ Follow these steps to download the drivers you need:
    Having these items ahead of time saves you from having to try and
    collect hardware during development:
 
-Supported Starter
-
-* Kit Gen3 board with its 5V power supply.
-* Micro USB-A cable for serial console.
-    This cable is optional if you are using Ethernet and an SSH connection.
-* USB 2.0 Hub.  The hub is optional but makes it easy to connect multiple USB devices.
-* Ethernet cable.  The cable is optional if you are using a serial console.
-* HDMI type D (Micro connector) cable and an associated display.
-* 4 Gbyte minimum MicroSD Card.  It is recommended that you use a class 10 type.
-* USB touch screen device such as the GeChic 1502i/1503i.  A touch screen device is optional.
+   * Supported Starter Kit Gen3 board with its 5V power supply.
+   * Micro USB-A cable for serial console.
+     This cable is optional if you are using Ethernet and an SSH connection.
+   * USB 2.0 Hub.  The hub is optional but makes it easy to connect multiple USB devices.
+   * Ethernet cable.  The cable is optional if you are using a serial console.
+   * HDMI type D (Micro connector) cable and an associated display.
+   * 4 Gbyte minimum MicroSD Card.  It is recommended that you use a class 10 type.
+   * USB touch screen device such as the GeChic 1502i/1503i.  A touch screen device is optional.
 
    **NOTE:** The Salvator-X Board has NDA restrictions.
    Consequently, less documentation is available for this board both here and across the
    Internet.
 
+
 ## 4. Making Sure Your Build Environment is Correct
 
    The
-   "[Initializing Your Build Environment](../image-workflow-initialize-build-environment.html#Initializing-your-build-environment)"
+   "[Initializing Your Build Environment](./3_Initializing_Your_Build_Environment.md)"
    section presented generic information for setting up your build environment
    using the `aglsetup.sh` script.
    If you are building an image for a supported Renesas board,
@@ -178,23 +146,27 @@ Supported Starter
    | Board| `MACHINE` Setting |
    |:-:|:-:|
    | Starter Kit Pro/M3  | `MACHINE`=m3ulcb |
+   | Starter Kit Pro/M3 + kingfisher support | `MACHINE`=m3ulcb-kf |
+   | Starter Kit Pro/M3 without graphic  | `MACHINE`=m3ulcb-nogfx |
    | Starter Kit Premier/H3  | `MACHINE`=h3ulcb |
+   | Starter Kit Premier/H3  + kingfisher support  | `MACHINE`=h3ulcb-kf |
+   | Starter Kit Premier/H3  without graphic   | `MACHINE`=h3ulcb-nogfx |
    | Salvator-X  | `MACHINE`=h3-salvator-x |
 
    For example, the following command defines and exports the `MACHINE` variable
    for the Starter Kit Pro/M3 Board:
 
-   ```bash
-   export MACHINE=m3ulcb
+   ```sh
+   $ export MACHINE=m3ulcb
    ```
 
 2. **Run the `aglsetup.sh` Script:**
 
    Use the following commands to run the AGL Setup script:
 
-   ```bash
-   cd $AGL_TOP
-   source meta-agl/scripts/aglsetup.sh -m $MACHINE -b build agl-devel agl-demo agl-netboot agl-appfw-smack agl-localdev
+   ```sh
+   $ cd $AGL_TOP
+   $ source meta-agl/scripts/aglsetup.sh -m $MACHINE -b build agl-devel agl-demo
    ```
 
    **NOTE:**
@@ -211,7 +183,7 @@ Supported Starter
    for the Renesas board.
 
    You can learn more about the AGL Features in the
-   "[Initializing Your Build Environment](../image-workflow-initialize-build-environment.html)"
+   "[Initializing Your Build Environment](./3_Initializing_Your_Build_Environment.md)"
    section.
 
 3. **Examine the Script's Log:**
@@ -260,20 +232,20 @@ Generating setup file: /home/working/workspace_agl_master/build_gen3/agl-init-bu
 
 ~/workspace_agl/build/conf $ cat setup.log
 --- beginning of setup script
---- fragment /home/iotbzh/workspace_agl/meta-agl/templates/base/01_setup_EULAfunc.sh
---- fragment /home/iotbzh/workspace_agl/meta-agl/templates/machine/m3ulcb/50_setup.sh
+--- fragment /home/working/workspace_agl/meta-agl/templates/base/01_setup_EULAfunc.sh
+--- fragment /home/working/workspace_agl/meta-agl/templates/machine/m3ulcb/50_setup.sh
 ~/workspace_agl ~/workspace_agl/build
-ERROR: FILES "+/home/iotbzh/Downloads/R-Car_Gen3_Series_Evaluation_Software_Package_for_Linux-weston5-20190802.zip+" NOT EXTRACTING CORRECTLY
-ERROR: FILES "+/home/iotbzh/Downloads/R-Car_Gen3_Series_Evaluation_Software_Package_of_Linux_Drivers-weston5-20190802.zip+" NOT EXTRACTING CORRECTLY
+ERROR: FILES "+/home/working/Downloads/R-Car_Gen3_Series_Evaluation_Software_Package_for_Linux-weston5-20190802.zip+" NOT EXTRACTING CORRECTLY
+ERROR: FILES "+/home/working/Downloads/R-Car_Gen3_Series_Evaluation_Software_Package_of_Linux_Drivers-weston5-20190802.zip+" NOT EXTRACTING CORRECTLY
 The graphics and multimedia acceleration packages for
 the R-Car Gen3 board BSP can be downloaded from:
 <https://www.renesas.com/us/en/solutions/automotive/rcar-download/rcar-demoboard-2.html>
 
 These 2 files from there should be stored in your
-'/home/iotbzh/Downloads' directory.
+'/home/working/Downloads' directory.
   R-Car_Gen3_Series_Evaluation_Software_Package_for_Linux-weston5-20190802.zip
   R-Car_Gen3_Series_Evaluation_Software_Package_of_Linux_Drivers-weston5-20190802.zip
-ERROR: Script /home/iotbzh/workspace_agl/build/conf/setup.sh failed
+ERROR: Script /home/working/workspace_agl/build/conf/setup.sh failed
 [snip]
     </code>
   </pre>
@@ -292,7 +264,7 @@ In general, the defaults along with the configuration fragments the
 `aglsetup.sh` script applies in the `local.conf` file are good enough.
 However, you can customize aspects by editing the `local.conf` file.
 See the
-"[Customizing Your Build](../image-workflow-cust-build.html)"
+"[Customizing Your Build](4_Customizing_Your_Build.md)"
 section for common configurations you might want to consider.
 
 **NOTE:** For detailed explanations of the configurations you can make
@@ -302,31 +274,27 @@ in the ``local.conf`` file, consult the
 A quick way to see if you have the `$MACHINE` variable set correctly
 is to use the following command:
 
-```bash
+```sh
 grep -w -e "^MACHINE =" $AGL_TOP/build/conf/local.conf
 ```
 
 Depending on the Renesas board you are using, you should see output
 as follows:
 
-```bash
+```sh
   MACHINE = "h3ulcb"
 ```
-
 or
-
-```bash
+```sh
   MACHINE = "m3ulcb"
 ```
-
 or
-
-```bash
+```sh
   MACHINE = "h3-salvator-x"
 ```
 
 If you ran the `aglsetup.sh` script as described in the
-"[Making Sure Your Build Environment is Correct](./renesas.html#4-making-sure-your-build-environment-is-correct)"
+"[Making Sure Your Build Environment is Correct](./5_3_RCar_Gen_3.md#4-making-sure-your-build-environment-is-correct)"
 section earlier, the "agl-devel", "agl-demo", "agl-netboot", "agl-appfw-smack", and
 "agl-localdev" AGL features will be in effect.
 These features provide the following:
@@ -351,12 +319,6 @@ does provide pre-built images for developers that work with supported hardware.
 You can find these pre-built images on the
 [AGL Download web site](https://download.automotivelinux.org/AGL/release).
 
-For supported Renesas boards, the filenames have the following form:
-
-```bash
-<release-name>/<release-number>/m3ulcb-nogfx/deploy/images/m3ulcb/Image-m3ulcb.bin
-```
-
 Start the build using the `bitbake` command.
 
 **NOTE:** An initial build can take many hours depending on your
@@ -365,13 +327,13 @@ The build also takes approximately 100G-bytes of free disk space.
 
 For this example, the target is "agl-demo-platform":
 
-```bash
+```sh
   bitbake agl-demo-platform
 ```
 
 The build process puts the resulting image in the Build Directory:
 
-```bash
+```
 <build_directory>/tmp/deploy/images/$MACHINE
 ```
 
@@ -414,7 +376,7 @@ Follow these steps to update the firmware:
    The table in the wiki lists the files you need to flash the firmware.
    You can find these files in the following directory:
 
-   ```bash
+   ```sh
    $AGL_TOP/build/tmp/deploy/images/$MACHINE
    ```
 
@@ -488,17 +450,17 @@ For this example, assume that the MicroSD card mount directory is stored in the
 
 Following are example commands that write the image to the MicroSD card:
 
-```bash
+```sh
 cd $AGL_TOP/build/tmp/deploy/images/$MACHINE
-bmaptool copy ./agl-demo-platform-$MACHINE.wic.xz $SDCARD
+bmaptool copy ./agl-demo-platform-$MACHINE.wic.xz <boot_device_name>
 ```
 
 Alternatively, you can leave the image in an uncompressed state and write it
 to the MicroSD card:
 
-```bash
-  sudo umount /dev/sdc
-  xzcat ./agl-demo-platform-$MACHINE.wic.xz | sudo dd of=$SDCARD bs=4M
+```sh
+  sudo umount <boot_device_name>
+  xzcat ./agl-demo-platform-$MACHINE.wic.xz | sudo dd of=<boot_device_name> bs=4M
   sync
 ```
 
@@ -579,20 +541,21 @@ To use the link, you need to launch the client.
 Here are three commands, which vary based on the serial client, that show
 how to launch the client:
 
-```bash
-picocom -b 115200 /dev/ttyUSB0
+
+```sh
+$ picocom -b 115200 /dev/ttyUSB0
 ```
 
 or
 
-```bash
-minicom -b 115200 -D /dev/ttyUSB0
+```sh
+$ minicom -b 115200 -D /dev/ttyUSB0
 ```
 
 or
 
-```bash
-screen /dev/ttyUSB0 115200
+```sh
+$ screen /dev/ttyUSB0 115200
 ```
 
 ### Powering on the Board to Get a Shell at the Console
@@ -698,140 +661,109 @@ Hit any key to stop autoboot:  0
 </details>
 
 ## 9. Setting-up U-boot
-
 ### Configuring U-Boot Parameters
 
 Follow these steps to configure the board to use the MicroSD card as the
 boot device and also to set the screen resolution:
 
-<ol>
-  <li>As the board is powering up, press any key to stop the autoboot process.
+1. As the board is powering up, press any key to stop the autoboot process.
    You need to press a key quickly as you have just a few seconds in which to
    press a key.
-  </li>
 
-  <li>Once the autoboot process is interrupted, use the board's serial console to
-   enter <b>printenv</b> to check if you have correct parameters for booting your board:
-<details>
-  <summary>
-    Here is an example using the <b>h3ulcb</b> board:
-  </summary>
-  <pre>
-    <code>
+2. Once the autoboot process is interrupted, use the board's serial console to
+  enter <b>printenv</b> to check if you have correct parameters for booting your board:
+    <details>
+      <summary>
+        Here is an example using the <b>h3ulcb</b> board:
+      </summary>
+      <pre>
+        <code>
 
-=> printenv
-baudrate=115200
-bootargs=console=ttySC0,115200 root=/dev/mmcblk1p1 rootwait ro rootfstype=ext4
-bootcmd=run load_ker; run load_dtb; booti 0x48080000 - 0x48000000
-bootdelay=3
-fdt_high=0xffffffffffffffff
-initrd_high=0xffffffffffffffff
-load_dtb=ext4load mmc 0:1 0x48000000 /boot/r8a7795-h3ulcb.dtb
-load_ker=ext4load mmc 0:1 0x48080000 /boot/Image
-stderr=serial
-stdin=serial
-stdout=serial
-ver=U-Boot 2015.04 (Jun 09 2016 - 19:21:52)
+    => printenv
+    baudrate=115200
+    bootargs=console=ttySC0,115200 root=/dev/mmcblk1p1 rootwait ro rootfstype=ext4
+    bootcmd=run load_ker; run load_dtb; booti 0x48080000 - 0x48000000
+    bootdelay=3
+    fdt_high=0xffffffffffffffff
+    initrd_high=0xffffffffffffffff
+    load_dtb=ext4load mmc 0:1 0x48000000 /boot/r8a7795-h3ulcb.dtb
+    load_ker=ext4load mmc 0:1 0x48080000 /boot/Image
+    stderr=serial
+    stdin=serial
+    stdout=serial
+    ver=U-Boot 2015.04 (Jun 09 2016 - 19:21:52)
 
-Environment size: 648/131068 bytes
-    </code>
-  </pre>
-</details>
-<details>
-  <summary>
-    Here is a second example using the <b>m3ulcb</b> board:
-  </summary>
-  <pre>
-    <code>
-=> printenv
-baudrate=115200
-bootargs=console=ttySC0,115200 root=/dev/mmcblk1p1 rootwait ro rootfstype=ext4
-bootcmd=run load_ker; run load_dtb; booti 0x48080000 - 0x48000000
-bootdelay=3
-fdt_high=0xffffffffffffffff
-filesize=cdeb
-initrd_high=0xffffffffffffffff
-load_dtb=ext4load mmc 0:1 0x48000000 /boot/r8a7796-m3ulcb.dtb
-load_ker=ext4load mmc 0:1 0x48080000 /boot/Image
-stderr=serial
-stdin=serial
-stdout=serial
-ver=U-Boot 2015.04 (Nov 30 2016 - 18:25:18)
+    Environment size: 648/131068 bytes
+        </code>
+      </pre>
+    </details>
+    <details>
+      <summary>
+        Here is a second example using the <b>m3ulcb</b> board:
+      </summary>
+      <pre>
+        <code>
+    => printenv
+    baudrate=115200
+    bootargs=console=ttySC0,115200 root=/dev/mmcblk1p1 rootwait ro rootfstype=ext4
+    bootcmd=run load_ker; run load_dtb; booti 0x48080000 - 0x48000000
+    bootdelay=3
+    fdt_high=0xffffffffffffffff
+    filesize=cdeb
+    initrd_high=0xffffffffffffffff
+    load_dtb=ext4load mmc 0:1 0x48000000 /boot/r8a7796-m3ulcb.dtb
+    load_ker=ext4load mmc 0:1 0x48080000 /boot/Image
+    stderr=serial
+    stdin=serial
+    stdout=serial
+    ver=U-Boot 2015.04 (Nov 30 2016 - 18:25:18)
 
-Environment size: 557/131068 bytes
-    </code>
-  </pre>
-</details>
-  </li>
+    Environment size: 557/131068 bytes
+        </code>
+      </pre>
+    </details>
 
-  <li>To boot your board using the MicroSD card, be sure your environment is set up
+  3. To boot your board using the MicroSD card, be sure your environment is set up
    as follows:
 
-  <pre>
-    <code>
-    setenv bootargs console=ttySC0,115200 ignore_loglevel vmalloc=384M video=HDMI-A-1:1920x1080-32@60 root=/dev/mmcblk1p1 rw rootfstype=ext4 rootwait rootdelay=2
-    setenv bootcmd run load_ker\; run load_dtb\; booti 0x48080000 - 0x48000000
-    setenv load_ker ext4load mmc 0:1 0x48080000 /boot/Image
-    </code>
-  </pre>
-  </li>
+      ```shell
+      setenv bootargs console=ttySC0,115200 ignore_loglevel vmalloc=384M video=HDMI-A-1:1920x1080-32@60 root=/dev/mmcblk1p1 rw rootfstype=ext4 rootwait rootdelay=2
+      setenv bootcmd run load_ker\; run load_dtb\; booti 0x48080000 - 0x48000000
+      setenv load_ker ext4load mmc 0:1 0x48080000 /boot/Image
+      ```
 
-  <li>Depending on the board type, the BSP version, and the existence of
-   a Kingfisher board, make sure your ``load_dtb`` is set as follows:<br>
+  4. Loading dtb :
 
-  <b>h3ulcb with BSP version greater than or equal to 2.19</b>:
+      **NOTE** : Refer [here](https://elinux.org/R-Car/Boards/Yocto-Gen3-CommonFAQ/Which_dtb_file_is_required_to_boot_linux_on_the_R-Car_Starter_Kit_board_%3F) for more information.
 
-  <pre>
-    <code>
-    setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7795-es1-h3ulcb.dtb
-    </code>
-  </pre>
+      Make sure your ``load_dtb`` is set as follows :
 
-  <b>h3ulcb with BSP version less than 2.19</b>:
+       * **H3SK v2.0(DDR 4GB)** : `$ setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7795-h3ulcb.dtb`
 
-  <pre>
-    <code>
-    setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7795-h3ulcb.dtb
-    </code>
-  </pre>
+       * **H3SK v2.0(DDR 8GB)/v3.0(DDR 8GB)** : `$ setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7795-h3ulcb-4x2g.dtb`
 
-  <b>m3ulcb</b>:
-  <pre>
-    <code>
-    setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7796-m3ulcb.dtb
-    </code>
-  </pre>
+       * **M3SK v1.0** : `$ setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7796-m3ulcb.dtb`
 
-  <b>m3ulcb with a Kingfisher board</b>:
-  <pre>
-    <code>
-    setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7796-m3ulcb-kf.dtb
-    </code>
-  </pre>
+       * **M3SK v3.0** : `$ setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7796-m3ulcb-2x4g.dtb`
 
-  <b>h3ulcb with a Kingfisher board</b>:
-  <pre>
-    <code>
-    setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7795-es1-h3ulcb-kf.dtb
-    </code>
-  </pre>
-  </li>
+       * **H3SK with a Kingfisher board** : `$ setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7795-h3ulcb-kf.dtb`
 
-  <li>Save the boot environment:<br>
-    <code>
+       * **M3SK with a Kingfisher board** : `$ setenv load_dtb ext4load mmc 0:1 0x48000000 /boot/r8a7796-m3ulcb-kf.dtb`
+
+  5. Save the boot environment:
+
+      ```shell
       saveenv
-    </code>
-  </li>
+      ```
 
-  <li>Boot the board:<br>
-  <code>
-    run bootcmd
-  </code>
-  </li>
-</ol>
+  6. Boot the board:
+      ```sh
+        run bootcmd
+      ```
+
+
 
 ## 10. Troubleshooting
-
 ### Logging Into the Console
 
 Once the board boots, you should see the
@@ -841,7 +773,7 @@ A login prompt should appear as follows depending on your board:
 
 **h3ulcb**:
 
-```bash
+```sh
 Automotive Grade Linux ${AGL_VERSION} h3ulcb ttySC0
 
 h3ulcb login: root
@@ -849,7 +781,7 @@ h3ulcb login: root
 
 **m3ulcb**:
 
-```bash
+```sh
 Automotive Grade Linux ${AGL_VERSION} m3ulcb ttySC0
 
 m3ulcb login: root
@@ -905,4 +837,109 @@ you can determine the board's IP address and log in using `ssh`.
   </pre>
 </details>
 
-**NOTE:** More generics troubleshooting can be found here : [Generic issues](../troubleshooting.html)
+## 11. Supplementary Information
+
+* R-Car Generation 3 Information
+
+Refer to the following for more information from [eLinux website](https://elinux.org/R-Car).
+
+* Proprietary libraries for meta-rcar-gen3
+
+The meta-rcar-gen3 layer of meta-renesas is supported Graphic GLES(GSX)
+libraries, proprietary library of multimedia, and ICCOM software.
+
+1. Build with Renesas multimedia libraries
+
+Multimedia portions depend on GLES portions.
+
+* A. Configuration for Multimedia features
+
+    * Please copy proprietary libraries to the directory of recipes.
+
+    * Please set local.conf the following.
+      **Enable multimedia features. This provides package group of plug-ins of the GStreamer, multimedia libraries and kernel drivers.**
+
+      ```sh
+      MACHINE_FEATURES_append = " multimedia"
+      ```
+
+* B. Configuration for optional codecs and middleware
+
+    * Please copy proprietary libraries to the directory of recipes.
+
+    * Add features to DISTRO_FEATURES_append to local.conf
+
+<details>
+  <summary>
+    **Additional configuration in OMX module**
+  </summary>
+  <pre>
+    <code>
+    " h263dec_lib"       - for OMX Media Component H263 Decoder Library
+    " h264dec_lib"       - for OMX Media Component H264 Decoder Library
+    " h264enc_lib"       - for OMX Media Component H.264 Encoder Library
+    " h265dec_lib"       - for OMX Media Component H265 Decoder Library
+    " mpeg2dec_lib"      - for OMX Media Component MPEG2 Decoder Library
+    " mpeg4dec_lib"      - for OMX Media Component MPEG4 Decoder Library
+    " vc1dec_lib"        - for OMX Media Component VC-1 Decoder Library
+    " divxdec_lib"       - for OMX Media Component DivX Decoder Library
+    " rvdec_lib"         - for OMX Media Component RealVideo Decoder Library
+    " alacdec_lib"       - for OMX Media Component ALAC Decoder Library
+    " flacdec_lib"       - for OMX Media Component FLAC Decoder Library
+    " aaclcdec_lib"      - for OMX Media Component AAC-LC Decoder Library
+    " aaclcdec_mdw"      - for AAC-LC 2ch Decoder Middleware for Linux
+    " aacpv2dec_lib"     - for OMX Media Component aacPlus V2 Decoder Library
+    " aacpv2dec_mdw"     - for aacPlus V2 Decoder Middleware for Linux
+    " mp3dec_lib"        - for OMX Media Component MP3 Decoder Library
+    " mp3dec_mdw"        - for MP3 Decoder Middleware for Linux
+    " wmadec_lib"        - for OMX Media Component WMA Standard Decoder Library
+    " wmadec_mdw"        - for WMA Standard Decoder Middleware for Linux
+    " dddec_lib"         - for OMX Media Component Dolby(R) Digital Decoder Library
+    " dddec_mdw"         - for Dolby(R) Digital Decoder Middleware for Linux
+    " aaclcenc_lib"      - for OMX Media Component AAC-LC Encoder Library
+    " vp8dec_lib"        - for OMX Media Component VP8 Decoder Library for Linux
+    " vp8enc_lib"        - for OMX Media Component VP8 Encoder Library for Linux
+    " vp9dec_lib"        - for OMX Media Component VP9 Decoder Library for Linux
+    " aaclcenc_mdw"      - for AAC-LC Encoder Middleware for Linux
+    " cmsbcm"            - for CMS Basic Color Management Middleware for Linux
+    " cmsblc"            - for CMS CMM3 Backlight Control Middleware for Linux
+    " cmsdgc"            - for CMS VSP2 Dynamic Gamma Correction Middleware for Linux
+    " dtv"               - for ISDB-T DTV Software Package for Linux
+    " dvd"               - for DVD Core-Middleware for Linux
+    " adsp"              - for ADSP driver, ADSP interface and ADSP framework for Linux
+    " avb"               - for AVB Software Package for Linux
+    </code>
+  </pre>
+</details>
+
+
+    Ex:
+
+    ```sh
+    DISTRO_FEATURES_append = " h264dec_lib h265dec_lib mpeg2dec_lib aaclcdec_lib aaclcdec_mdw"
+    ```
+
+* C. Configuration for test packages
+
+  Must ensure that Multimedia features have been enabled.
+  (Please refer to III/A to enable Multimedia.)
+
+  * Please add feature to DISTRO_FEATURES_append to local.conf.
+
+    **Configuration for multimedia test package**
+    ```sh
+    DISTRO_FEATURES_append = "mm-test"
+    ```
+
+2. Enable Linux ICCOM driver and Linux ICCOM library
+
+
+    For Linux ICCOM driver and Linux ICCOM library
+
+    * Please copy proprietary libraries to the directory of recipes.
+
+    * Please set local.conf the following.
+
+    ```sh
+    DISTRO_FEATURES_append = "iccom"
+    ```
